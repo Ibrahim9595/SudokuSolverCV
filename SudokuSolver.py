@@ -73,18 +73,37 @@ class SudokuSolver:
     def getGridNumbers(self, image, side):
         grid_size = 9
         step = side / grid_size
+        croped_imgs = []
+        labels = []
+        print(step)
 
         for x in range(grid_size):
             for y in range(grid_size):
                 x_step = int(x * step)
                 y_step = int(y * step)
-                crop_step = int(step - 5)
+                crop_step = int(step - 3)
 
                 croped_img = cv2.resize(
-                    image[x_step + 5:x_step+crop_step,
-                          y_step + 5:y_step+crop_step],
+                    image[x_step + 3:x_step+crop_step,
+                          y_step + 3:y_step+crop_step],
                     (50, 50))
 
-                # cv2.imwrite('./output/'+str(self.c)+str(x)+'_'+str(y)+'.png', croped_img)
+                croped_imgs.append(croped_img)
+                labels.append((x, y))
+
+        predictions = self.numberRecognizer.recognize_numbers(
+            croped_imgs, labels
+        )
+
+        for prediction in predictions:
+            (x_, y_) = prediction[1]
+            x = (int(x_ * step) + int(x_ * step + step)) // 2
+            y = (int(y_ * step) + int(y_ * step + step)) // 2
+
+            image = cv2.putText(
+                image, str(prediction[0]),
+                (y, x), cv2.FONT_HERSHEY_SIMPLEX, .5,
+                (0, 0, 255), 3, cv2.LINE_AA
+            )
 
         return image
