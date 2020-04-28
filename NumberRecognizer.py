@@ -8,9 +8,8 @@ from tensorflow import (
 
 
 class NumberRecognizer:
-    def __init__(self):
-        self.model = models.load_model(
-            './notebooks/models/cnn/best_model')
+    def __init__(self, model_path):
+        self.model = models.load_model(model_path)
         _, self.image_width, self.image_height, _ = self.model.layers[0].input_shape
 
     def decode_img(self, img):
