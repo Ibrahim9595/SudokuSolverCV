@@ -75,17 +75,16 @@ class SudokuSolver:
         step = side / grid_size
         croped_imgs = []
         labels = []
-        print(step)
 
         for x in range(grid_size):
             for y in range(grid_size):
                 x_step = int(x * step)
                 y_step = int(y * step)
-                crop_step = int(step - 3)
+                crop_step = int(step - 10)
 
                 croped_img = cv2.resize(
-                    image[x_step + 3:x_step+crop_step,
-                          y_step + 3:y_step+crop_step],
+                    image[x_step + 10:x_step+crop_step,
+                          y_step + 10:y_step+crop_step],
                     (50, 50))
 
                 croped_imgs.append(croped_img)
@@ -95,6 +94,9 @@ class SudokuSolver:
             croped_imgs, labels
         )
 
+        return self.drawNumbers(image, predictions, step)
+
+    def drawNumbers(self, image, predictions, step):
         for prediction in predictions:
             (x_, y_) = prediction[1]
             x = (int(x_ * step) + int(x_ * step + step)) // 2
@@ -102,7 +104,7 @@ class SudokuSolver:
 
             image = cv2.putText(
                 image, str(prediction[0]),
-                (y, x), cv2.FONT_HERSHEY_SIMPLEX, .5,
+                (y, x), cv2.FONT_HERSHEY_SIMPLEX, 1,
                 (0, 0, 255), 3, cv2.LINE_AA
             )
 
