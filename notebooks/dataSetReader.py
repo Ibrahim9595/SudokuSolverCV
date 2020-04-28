@@ -7,7 +7,7 @@ AUTOTUNE = tf.data.experimental.AUTOTUNE
 
 
 class DataSetReader:
-    def __init__(self, data_dir='./dataset', batch_size=32, img_height=50, img_width=50):
+    def __init__(self, data_dir='./dataset/train', batch_size=32, img_height=50, img_width=50):
         self.BATCH_SIZE = batch_size
         self.IMG_HEIGHT = img_height
         self.IMG_WIDTH = img_width
