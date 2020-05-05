@@ -4,8 +4,9 @@ import numpy as np
 
 
 class SudokuSolver:
-    def __init__(self, numberRecognizer):
+    def __init__(self, numberRecognizer, debug=True):
         self.numberRecognizer = numberRecognizer
+        self.debug = debug
 
     def imageToGrid(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -14,7 +15,7 @@ class SudokuSolver:
             255, 1, 1, 11, 2
         )
 
-        vertices = self.getVertices(thres)
+        vertices = self._getVertices(thres)
 
         if len(vertices) != 4:
             return image
@@ -24,15 +25,15 @@ class SudokuSolver:
 
         new_vertices = [[0, 0], [side, 0], [0, side], [side, side]]
 
-        result = self.perspectiveSquareTransform(
+        result = self.__perspectiveSquareTransform(
             image, vertices,
             new_vertices,
             side, side
         )
 
-        return self.getGridNumbers(result, side)
+        return self.__getGridNumbers(result, side)
 
-    def perspectiveSquareTransform(self, image, old_vertices, new_vertices, width, height):
+    def __perspectiveSquareTransform(self, image, old_vertices, new_vertices, width, height):
         matrix = cv2.getPerspectiveTransform(
             np.float32(old_vertices),
             np.float32(new_vertices)
@@ -40,8 +41,8 @@ class SudokuSolver:
 
         return cv2.warpPerspective(image, matrix, (width, height))
 
-    def getVertices(self, image):
-        vertices_ = self.getBestContour(image)
+    def _getVertices(self, image):
+        vertices_ = self.__getBestContour(image)
         vertices = []
         for v in vertices_:
             vertices.append([v[0][0], v[0][1]])
@@ -53,7 +54,7 @@ class SudokuSolver:
 
         return vertices
 
-    def getBestContour(self, image):
+    def __getBestContour(self, image):
         contours, _ = cv2.findContours(
             image, cv2.RETR_TREE,
             cv2.CHAIN_APPROX_SIMPLE
@@ -70,7 +71,7 @@ class SudokuSolver:
 
         return cv2.approxPolyDP(best_cnt, epsilon, True)
 
-    def getGridNumbers(self, image, side):
+    def __getGridNumbers(self, image, side):
         grid_size = 9
         step = side / grid_size
         croped_imgs = []
@@ -94,9 +95,21 @@ class SudokuSolver:
             croped_imgs, labels
         )
 
-        return self.drawNumbers(image, predictions, step)
+        if self.debug:
+            self.showNumbersOnImage(image, predictions, step)
 
-    def drawNumbers(self, image, predictions, step):
+        return self.__createGrid(predictions)
+
+    def __createGrid(self, predictions):
+        grid = [[0 for i in range(9)] for j in range(9)]
+
+        for prediction in predictions:
+            (x, y) = prediction[1]
+            grid[x][y] = prediction[0]
+
+        return grid
+
+    def showNumbersOnImage(self, image, predictions, step):
         for prediction in predictions:
             (x_, y_) = prediction[1]
             x = (int(x_ * step) + int(x_ * step + step)) // 2
@@ -108,4 +121,4 @@ class SudokuSolver:
                 (0, 0, 255), 3, cv2.LINE_AA
             )
 
-        return image
+        cv2.imshow('Test', image)
