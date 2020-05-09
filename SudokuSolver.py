@@ -4,9 +4,8 @@ import numpy as np
 
 
 class SudokuSolver:
-    def __init__(self, numberRecognizer, debug=True):
+    def __init__(self, numberRecognizer):
         self.numberRecognizer = numberRecognizer
-        self.debug = debug
 
     def imageToGrid(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -18,7 +17,7 @@ class SudokuSolver:
         vertices = self._getVertices(thres)
 
         if len(vertices) != 4:
-            return image
+            return image, vertices
 
         side = int(sqrt((vertices[0][0] - vertices[2][0])
                         ** 2 + (vertices[0][1] - vertices[2][1]) ** 2))
@@ -31,7 +30,7 @@ class SudokuSolver:
             side, side
         )
 
-        return self.__getGridNumbers(result, side)
+        return (result, self.__getGridNumbers(result, side))
 
     def __perspectiveSquareTransform(self, image, old_vertices, new_vertices, width, height):
         matrix = cv2.getPerspectiveTransform(
@@ -81,11 +80,11 @@ class SudokuSolver:
             for y in range(grid_size):
                 x_step = int(x * step)
                 y_step = int(y * step)
-                crop_step = int(step - 10)
+                crop_step = int(step - 7)
 
                 croped_img = cv2.resize(
-                    image[x_step + 10:x_step+crop_step,
-                          y_step + 10:y_step+crop_step],
+                    image[x_step + 7:x_step+crop_step,
+                          y_step + 7:y_step+crop_step],
                     (50, 50))
 
                 croped_imgs.append(croped_img)
@@ -94,9 +93,6 @@ class SudokuSolver:
         predictions = self.numberRecognizer.recognize_numbers(
             croped_imgs, labels
         )
-
-        if self.debug:
-            self.showNumbersOnImage(image, predictions, step)
 
         return self.__createGrid(predictions)
 
@@ -109,16 +105,16 @@ class SudokuSolver:
 
         return grid
 
-    def showNumbersOnImage(self, image, predictions, step):
-        for prediction in predictions:
-            (x_, y_) = prediction[1]
-            x = (int(x_ * step) + int(x_ * step + step)) // 2
-            y = (int(y_ * step) + int(y_ * step + step)) // 2
+    def showNumbersOnImage(self, image, grid, step):
+        for x_ in range(len(grid)):
+            for y_ in range(len(grid[x_])):
+                x = (int(x_ * step) + int(x_ * step + step)) // 2
+                y = (int(y_ * step) + int(y_ * step + step)) // 2
 
-            image = cv2.putText(
-                image, str(prediction[0]),
-                (y, x), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                (0, 0, 255), 3, cv2.LINE_AA
-            )
+                image = cv2.putText(
+                    image, str(grid[x_][y_]),
+                    (y, x), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                    (0, 0, 255), 3, cv2.LINE_AA
+                )
 
         cv2.imshow('Test', image)
