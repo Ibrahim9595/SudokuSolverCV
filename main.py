@@ -1,5 +1,6 @@
 from SudokuSolver import SudokuSolver
 from NumberRecognizer import NumberRecognizer
+from SudokuAlgorithm import SudokuAlgorithm
 import cv2
 
 recognizer = NumberRecognizer('./deeplearning/models/cnn/best_model')
@@ -7,26 +8,35 @@ solver = SudokuSolver(recognizer)
 
 
 paths = [
-    # "./inputs/a.jpg",
-    # "./inputs/b.jpg",
-    # "./inputs/c.jpg",
-    # "./inputs/d.jpg",
-    # "./inputs/e.jpg",
-    # "./inputs/f.jpg",
-    # "./inputs/g.jpg",
-    # "./inputs/h.jpg",
-    # "./inputs/i.jpeg",
-    # "./inputs/j.jpg",
-    # "./inputs/k.jpg",
-    # "./inputs/l.jpeg",
-    # "./inputs/m.jpg",
-    # "./inputs/n.png",
-    "./inputs/o.png"
+    "./inputs/c.jpg",
+    "./inputs/d.jpg",
+    "./inputs/e.jpg",
+    "./inputs/g.jpg",
+    "./inputs/n.png",
+    "./inputs/o.png",
+    "./inputs/p.png",
+    "./inputs/q.png",
+    "./inputs/r.png",
+    "./inputs/s.png",
+    "./inputs/v.png",
+    "./inputs/u.png",
 ]
 
 for path in paths:
-    img = solver.imageToGrid(cv2.imread(path))
+    try:
+        img, grid = solver.imageToGrid(cv2.imread(path))
+        img = cv2.resize(img, (600, 600))
+        h, w, ch = img.shape
 
-    cv2.imshow('test', img)
+        if grid != None:
+            algorithm = SudokuAlgorithm(grid)
+            solution = algorithm.solve()
+            if solution != None:
+                solver.showNumbersOnImage(img, solution, h // 9)
+
+    except:
+        print('error in ' + path)
+        solver.showNumbersOnImage(img, grid, h // 9)
+
     cv2.waitKey(0)
     cv2.destroyAllWindows()
