@@ -94,6 +94,7 @@ class SudokuSolver:
             croped_imgs, labels
         )
 
+
         return self.__createGrid(predictions)
 
     def __createGrid(self, predictions):

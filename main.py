@@ -8,18 +8,20 @@ solver = SudokuSolver(recognizer)
 
 
 paths = [
-    "./inputs/c.jpg",
-    "./inputs/d.jpg",
-    "./inputs/e.jpg",
-    "./inputs/g.jpg",
-    "./inputs/n.png",
-    "./inputs/o.png",
-    "./inputs/p.png",
-    "./inputs/q.png",
-    "./inputs/r.png",
-    "./inputs/s.png",
-    "./inputs/v.png",
-    "./inputs/u.png",
+    # "./inputs/c.jpg",
+    # "./inputs/d.jpg",
+    # "./inputs/e.jpg",
+    # "./inputs/g.jpg",
+    # "./inputs/n.png",
+    # "./inputs/o.png",
+    # "./inputs/p.png",
+    # "./inputs/q.png",
+    # "./inputs/r.png",
+    # "./inputs/s.png",
+    # "./inputs/u.png",
+    # "./inputs/v.png",
+    # "./inputs/x.png",
+    "./inputs/fail/y.jpeg",
 ]
 
 for path in paths:
